@@ -6,7 +6,7 @@
 <script setup lang="ts">
 import { useWindowSize } from '@vueuse/core'
 import { ref, onMounted, watchEffect, computed } from 'vue'
-import { Color, Fog, Scene } from 'three'
+import { Clock, Color, Fog, Scene } from 'three'
 import {
   initCamera,
   initRenderer,
@@ -18,7 +18,9 @@ import {
   createGridHelper,
   createHemiLight,
   createDirLight,
+  createGui,
 } from '@/utils/three'
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 
 const canvas = ref()
 
@@ -28,6 +30,23 @@ scene.fog = new Fog(0xe0e0e0, 20, 100)
 
 let renderer: any = null
 let camera = null
+let model = null
+let mixer: any = null
+let clock: any = null
+
+const loader = new GLTFLoader()
+loader.load(
+  'src/utils/three/models/RobotExpressive.glb',
+  function (gltf) {
+    model = gltf.scene
+    scene.add(model)
+    mixer = createGui(model, gltf.animations)
+  },
+  undefined,
+  function (e) {
+    console.error(e)
+  }
+)
 
 const cube = createCube()
 const ground = createGround()
@@ -47,7 +66,7 @@ cube.position.y = 0.5
 
 scene.add(camera)
 scene.add(ground)
-scene.add(cube)
+// scene.add(cube)
 scene.add(grid)
 scene.add(hemiLight)
 scene.add(dirLight)
@@ -64,10 +83,15 @@ onMounted(() => {
 
     const controls = orbitControls(camera, renderer)
 
+    clock = new Clock()
     updateRenderer(renderer, width.value, height.value)
     updateCamera(camera, aspectRatio.value)
 
     const tick = () => {
+      const dt = clock.getDelta()
+
+      if (mixer) mixer.update(dt)
+
       renderer.render(scene, camera)
       window.requestAnimationFrame(tick)
       controls.update()
