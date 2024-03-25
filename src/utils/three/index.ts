@@ -205,4 +205,4 @@ export const createGui = (model: any, animations: any) => {
   return mixer
 }
 
-export * from './chess-board'
+// export * from './chess-board'
