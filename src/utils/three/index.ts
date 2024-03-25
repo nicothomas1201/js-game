@@ -13,7 +13,7 @@ import {
   WebGLRenderer,
 } from 'three'
 import { PerspectiveCamera } from 'three'
-import { AmmoPhysics, OrbitControls } from 'three/examples/jsm/Addons.js'
+import { OrbitControls } from 'three/examples/jsm/Addons.js'
 import GUI from 'three/examples/jsm/libs/lil-gui.module.min.js'
 
 let previousAction: any = null
